@@ -12,6 +12,7 @@ type TepRecord = {
         totalPointsNp: number;
         autoPoints: number;
         dcPoints: number;
+        dcParkPoints: number;
       };
     };
   };
@@ -36,7 +37,7 @@ const buildCSV = () => {
 
   while (skip + take < 6000) {
     const graphql = JSON.stringify({
-      query: `{\r\n  tepRecords(season:2024, skip:${skip}, take:${take}, region:All, ) {\r\n    data {\r\n      noFilterRank\r\n      data {\r\n        teamNumber\r\n        stats { \r\n            ... on TeamEventStats2024 {\r\n            opr { totalPoints, totalPointsNp, autoPoints, dcPoints }}\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n`,
+      query: `{\r\n  tepRecords(season:2024, skip:${skip}, take:${take}, region:All, ) {\r\n    data {\r\n      noFilterRank\r\n      data {\r\n        teamNumber\r\n        stats { \r\n            ... on TeamEventStats2024 {\r\n            opr { totalPoints, totalPointsNp, autoPoints, dcPoints, dcParkPoints }}\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n`,
       variables: {},
     });
     const requestOptions = {
@@ -66,7 +67,8 @@ const buildCSV = () => {
 ${opr.totalPoints.toFixed(2)}, \
 ${opr.totalPointsNp.toFixed(2)}, \
 ${opr.autoPoints.toFixed(2)}, \
-${opr.dcPoints.toFixed(2)}`
+${opr.dcPoints.toFixed(2)}, \
+${opr.dcParkPoints.toFixed(2)}`
           );
         })
     );
@@ -75,7 +77,9 @@ ${opr.dcPoints.toFixed(2)}`
   }
 
   Promise.all(queries_arr).then((data) => {
-    let csv = "teamnumber, opr, nopr, auto, teleop \n" + data.flat().join("\n");
+    let csv =
+      "teamnumber, opr, nopr, auto, teleop, endgame \n" +
+      data.flat().join("\n");
 
     downloadBlob(new Blob([csv], { type: "text/csv" }));
   });

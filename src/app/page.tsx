@@ -1,6 +1,4 @@
-"use client";
-
-import Image from "next/image";
+'use client';
 
 type TepRecord = {
   noFilterRank: number;
@@ -28,7 +26,7 @@ type TepRecordsResponse = {
 
 const buildCSV = () => {
   const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append('Content-Type', 'application/json');
 
   const queries_arr = [];
 
@@ -38,16 +36,16 @@ const buildCSV = () => {
   while (skip + take < 6000) {
     const graphql = JSON.stringify({
       query: `{\r\n  tepRecords(season:2024, skip:${skip}, take:${take}, region:All, ) {\r\n    data {\r\n      noFilterRank\r\n      data {\r\n        teamNumber\r\n        stats { \r\n            ... on TeamEventStats2024 {\r\n            opr { totalPoints, totalPointsNp, autoPoints, dcPoints, dcParkPoints }}\r\n        }\r\n      }\r\n    }\r\n  }\r\n}\r\n`,
-      variables: {},
+      variables: {}
     });
     const requestOptions = {
-      method: "POST",
+      method: 'POST',
       headers: myHeaders,
-      body: graphql,
+      body: graphql
     };
 
     queries_arr.push(
-      fetch("https://api.ftcscout.org/graphql", requestOptions)
+      fetch('https://api.ftcscout.org/graphql', requestOptions)
         .then((response) => response.text())
         .then((result) => {
           let obj: TepRecordsResponse = JSON.parse(result);
@@ -60,8 +58,8 @@ const buildCSV = () => {
             ({
               data: {
                 teamNumber,
-                stats: { opr },
-              },
+                stats: { opr }
+              }
             }) =>
               `${teamNumber}, \
 ${opr.totalPoints.toFixed(2)}, \
@@ -78,15 +76,15 @@ ${opr.dcParkPoints.toFixed(2)}`
 
   Promise.all(queries_arr).then((data) => {
     let csv =
-      "teamnumber, opr, nopr, auto, teleop, endgame \n" +
-      data.flat().join("\n");
+      'teamnumber, opr, nopr, auto, teleop, endgame \n' +
+      data.flat().join('\n');
 
-    downloadBlob(new Blob([csv], { type: "text/csv" }));
+    downloadBlob(new Blob([csv], { type: 'text/csv' }));
   });
 };
 
 const downloadBlob = (fileBlob: Blob) => {
-  const element = document.createElement("a");
+  const element = document.createElement('a');
 
   element.href = URL.createObjectURL(fileBlob);
 
@@ -103,14 +101,14 @@ const downloadBlob = (fileBlob: Blob) => {
 
 export default function Home() {
   return (
-    <div className="grid items-center justify-items-center min-h-screen">
-      <main className="">
+    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_max-content] min-w-screen min-h-screen">
+      <div className="bg-white"></div>
+      <main className="flex flex-col items-center justify-center p-12">
         <button
           onClick={() => {
             buildCSV();
           }}
-          className="text-black  bg-white p-4"
-        >
+          className="text-black bg-white p-4">
           Download full rankings
         </button>
       </main>

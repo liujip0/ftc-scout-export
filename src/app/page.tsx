@@ -102,8 +102,10 @@ const downloadBlob = (fileBlob: Blob) => {
 export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_max-content] min-w-screen min-h-screen">
-      <div className="bg-white"></div>
-      <main className="flex flex-col items-center justify-center p-12">
+      <div className="bg-white">
+        
+      </div>
+      <main className="flex flex-col items-center justify-center p-12 bg-black">
         <button
           onClick={() => {
             buildCSV();
